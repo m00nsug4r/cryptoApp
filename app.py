@@ -27,15 +27,19 @@ def decClick():
     #διαγραφη προηγουμενων κουμπιων
     encButton.destroy()
     decButton.destroy()
-    #πεδιο για εισοδο κρυπτοκειμενου
-    cipher = Entry(root, width=50)
-    cipher.pack()
-    cipher.insert(0,"Enter text to decrypt")
-    #πεδιο για εισοδο μυστικου κλειδιου
-    key = Entry(root, width=50)
-    key.pack()
-    key.insert(0,"Enter secret key")
-    SubmitKeyChoice = Button(root, text="Decrypt your text", padx=50, pady=10, command=lambda: Decryption(cipher.get(), key))  
+    #-------BROWSING σε 2 φακελους 1)αρχειο κρυπτογραφημενο 2) κλειδι----------
+
+    #ανοιγμα αρχειου που περιεχει το κλειδι και αποθηκευση σε τοπικη μνημη 
+    with open('mykey.key', 'rb') as mykey:
+        key = mykey.read()
+
+    #ανοιγουμε το κρυπτογραφημενο αρχειο και το εκχωρουμε στην μεταβλητη encrypted
+    with open('enc_grades.csv', 'rb') as encrypted_file:
+        encrypted = encrypted_file.read()
+    
+
+
+    SubmitKeyChoice = Button(root, text="Decrypt your text", padx=50, pady=10, command=lambda: Decryption(encrypted, key))  
     SubmitKeyChoice.pack() 
  
 
@@ -43,59 +47,53 @@ def decClick():
 def KeyManager(value):
     
     if(value == 1): # περιπτωση τυχαιας δημιουργιας
-        key = Fernet.generate_key()
-        key = key.decode('utf-8') #μετατροπη του κλειδιου απο bytes se string
-        cipher_suite = Fernet(key)
-        keyText = ("your new key is : "+ key)
-        #παραγωγη τυχαιου κλειδιου
-        RandomKey = Label(root, text=keyText,bg="red")
-        RandomKey.pack()
-        print(keyText)
-        #πεδιο εισαγωγης κειμενου
-        PlainText = Entry(root, width=50)
-        PlainText.pack()
-        PlainText.insert(0,"Enter text to encrypt")
+        # δημιουργεια κλειδιου
+        key = Fernet.generate_key() 
+        #αποθηκευση στον ιδιο φακελο
+        with open('mykey.key', 'wb') as mykey:
+            mykey.write(key)
+
+        #ανοιγμα αρχειου που περιεχει το κλειδι και αποθηκευση σε τοπικη μνημη 
+        with open('mykey.key', 'rb') as mykey:
+            key = mykey.read()
+
+        #---------------FILE BROWSING | εγω το βαζω απο αυτοματο αρχειο------------------
+
+        # αποθηκευση κλειδιου σε μεταβλητη f
+        f = Fernet(key)
+        #ανοιγμα του αρχειο με τους βαθμους και το διαβαζουμε , αποθηκευση στην μεταβλητη original
+        with open('grades.csv', 'rb') as original_file:
+            PlainText = original_file.read()
+        
 
     elif(value == 2): #περιπτωση εισαγωγης
 
-        #πεδιο για εισοδο κειμενου
-        PlainText = Entry(root, width=50)
-        PlainText.pack()
-        PlainText.insert(0,"Enter text to encrypt")
-
-        #πεδιο για εισοδο κωδικου
-        key = Entry(root, width=50)
-        key.pack()
-        cipher_suite = Fernet(key.get().encode())
-
+      print("lol")
 
     #υποβολη αποφασης χειρισμου κλειδιου και ανακατευθυνση στην σωστη συναρτηση
-    SubmitKeyChoice = Button(root, text="Encrypt your text", padx=50, pady=10, command=lambda: Encryption(PlainText.get(), cipher_suite))  
+    SubmitKeyChoice = Button(root, text="Encrypt your file", padx=50, pady=10, command=lambda: Encryption(PlainText, key))  
     SubmitKeyChoice.pack() 
     
     return key
     
 #συναρτηση για την κρυπτογραφηση κειμενου
 def Encryption(PlainText , key):
+    f = Fernet(key)
+    # κανουμε κρυπτογραφηση του αρχειου με χρηση του fernet object 
+    encrypted = f.encrypt(PlainText)
+    #γραφουμε ενα καινουριο αρχειο οπου ειναι η κρυπτογραφημενη μορφη του αρχικου
+    with open ('enc_grades.csv', 'wb') as encrypted_file:
+        encrypted_file.write(encrypted)
+
+def Decryption(encrypted, key):
+
+    f = Fernet(key)
     
-    LabelPlain =Label(root, text="Plain text: "+PlainText)
-    LabelPlain.pack()
-
-    encMessage = key.encrypt(PlainText.encode())
-    LabelCipher = Label(root, text="Cipher Text: "+encMessage.decode())
-    LabelCipher.pack()
-    print(encMessage.decode())
-
-def Decryption(cipher, key):
-
-    secKey = Fernet(key.get().encode())
-    decMessage = secKey.decrypt(cipher).decode()
-
-    LabelCipher = Label(root, text="Cipher Text: "+cipher)
-    LabelCipher.pack()
-
-    LabelPlain = Label(root, text="Decoded Plain text: "+decMessage)
-    LabelPlain.pack()
+    #αποκρυπτογραφουμε το αρχειο με χρηση του fernet object
+    decrypted = f.decrypt(encrypted)
+    #γραφουμε ενα καινουριο αρχειο οπου εχει γινει αποκρυπτογραφηση στο κρυπτογραφημενο αρχειο 
+    with open('dec_grades.csv', 'wb') as decrypted_file:
+        decrypted_file.write(decrypted)
 
 
 root = Tk()
