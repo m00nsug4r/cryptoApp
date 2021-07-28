@@ -15,9 +15,10 @@ def encClick():
     #προεπιλεγμενη τιμη 1
     r.set("1")
     #κουμπια
-    Radiobutton(root, text="Generate a random secret key", variable=r, value=1, command=lambda: KeyManager(r.get())).pack()
-    Radiobutton(root, text="Enter your own secret key", variable=r, value=2, command=lambda: KeyManager(r.get())).pack()
-
+    rad1 = Radiobutton(root, text="Generate a random secret key", variable=r, value=1, command=lambda: KeyManager(r.get()))
+    rad2 = Radiobutton(root, text="Enter your own secret key", variable=r, value=2, command=lambda: KeyManager(r.get()))
+    rad1.pack()
+    rad2.pack()
 
    
 
@@ -34,7 +35,9 @@ def decClick():
     key = Entry(root, width=50)
     key.pack()
     key.insert(0,"Enter secret key")
-
+    SubmitKeyChoice = Button(root, text="Decrypt your text", padx=50, pady=10, command=lambda: Decryption(cipher.get(), key))  
+    SubmitKeyChoice.pack() 
+ 
 
 #συναρτηση για την δημιουργια η εκχωρηση κλειδιου
 def KeyManager(value):
@@ -44,8 +47,14 @@ def KeyManager(value):
         key = key.decode('utf-8') #μετατροπη του κλειδιου απο bytes se string
         cipher_suite = Fernet(key)
         keyText = ("your new key is : "+ key)
+        #παραγωγη τυχαιου κλειδιου
         RandomKey = Label(root, text=keyText,bg="red")
         RandomKey.pack()
+        print(keyText)
+        #πεδιο εισαγωγης κειμενου
+        PlainText = Entry(root, width=50)
+        PlainText.pack()
+        PlainText.insert(0,"Enter text to encrypt")
 
     elif(value == 2): #περιπτωση εισαγωγης
 
@@ -57,48 +66,36 @@ def KeyManager(value):
         #πεδιο για εισοδο κωδικου
         key = Entry(root, width=50)
         key.pack()
-        key.insert(0,"Enter your secret key")
+        cipher_suite = Fernet(key.get().encode())
 
-        
-       
-        #μετατροπη απο entry object σε string
-        PlainText = PlainText.get()
-        key = key.get()
-
-
-       
-        
-       
 
     #υποβολη αποφασης χειρισμου κλειδιου και ανακατευθυνση στην σωστη συναρτηση
-    SubmitKeyChoice = Button(root, text="Encrypt your text", padx=50, pady=10, command=lambda: Encryption(PlainText, key))  
+    SubmitKeyChoice = Button(root, text="Encrypt your text", padx=50, pady=10, command=lambda: Encryption(PlainText.get(), cipher_suite))  
     SubmitKeyChoice.pack() 
     
     return key
     
 #συναρτηση για την κρυπτογραφηση κειμενου
 def Encryption(PlainText , key):
-    #οταν μπαινουμε εδω θα πρεπει να διαγραφουμε τα radio buttons 
-
     
-    
-    #για καποιο λογο εμφανιζει μονο το κειμενο που εχει οριστει στην γραμμη 555|60 με τα αρχικα κειμενα enter text αρα υποθετω πρεπει να γραφτει ωστε να αλλαζει δυναμικα
-    print(PlainText)
-    LabelPlain =Label(root, text=PlainText)
+    LabelPlain =Label(root, text="Plain text: "+PlainText)
     LabelPlain.pack()
 
+    encMessage = key.encrypt(PlainText.encode())
+    LabelCipher = Label(root, text="Cipher Text: "+encMessage.decode())
+    LabelCipher.pack()
+    print(encMessage.decode())
 
-    
-    LableKey = Label(root, text=key)
-    LableKey.pack()
+def Decryption(cipher, key):
 
-    
+    secKey = Fernet(key.get().encode())
+    decMessage = secKey.decrypt(cipher).decode()
 
+    LabelCipher = Label(root, text="Cipher Text: "+cipher)
+    LabelCipher.pack()
 
-
-
-
-
+    LabelPlain = Label(root, text="Decoded Plain text: "+decMessage)
+    LabelPlain.pack()
 
 
 root = Tk()
