@@ -1,5 +1,8 @@
 from cryptography.fernet import Fernet
 from tkinter import *
+import tkinter as tk
+from tkinter import ttk
+from tkinter.messagebox import showinfo
 
 
 #συναρτηση σε περιπτωση επιλογης κρυπτογραφησης 
@@ -57,21 +60,38 @@ def KeyManager(value):
         key.insert(0,"Enter your secret key")
 
         
-        #εμφανισει κρυπτογραφημενου μhνyματος
-        #ShowChiperText = Label(root, text=cipher_text)
-        #ShowChiperText.pack()
+       
+        #μετατροπη απο entry object σε string
+        PlainText = PlainText.get()
+        key = key.get()
+
+
+       
+        
        
 
     #υποβολη αποφασης χειρισμου κλειδιου και ανακατευθυνση στην σωστη συναρτηση
-    SubmitKeyChoice = Button(root, text="Encrypt your text", padx=50, pady=10, command=encClick)  
+    SubmitKeyChoice = Button(root, text="Encrypt your text", padx=50, pady=10, command=lambda: Encryption(PlainText, key))  
     SubmitKeyChoice.pack() 
     
     return key
     
 #συναρτηση για την κρυπτογραφηση κειμενου
-def Encryption():
+def Encryption(PlainText , key):
     #οταν μπαινουμε εδω θα πρεπει να διαγραφουμε τα radio buttons 
-    print("p")
+
+    
+    
+    #για καποιο λογο εμφανιζει μονο το κειμενο που εχει οριστει στην γραμμη 555|60 με τα αρχικα κειμενα enter text αρα υποθετω πρεπει να γραφτει ωστε να αλλαζει δυναμικα
+    print(PlainText)
+    LabelPlain =Label(root, text=PlainText)
+    LabelPlain.pack()
+
+
+    
+    LableKey = Label(root, text=key)
+    LableKey.pack()
+
     
 
 
