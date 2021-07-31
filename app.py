@@ -22,11 +22,14 @@ def StartMenu():
 
 def clear():
     #συναρτηση για καταστριοφη του frame και αναδημιουργια του
-    global main, root
+    global main, bottomFrame, root
+    bottomFrame.destroy()
     main.destroy()
     main=Frame(root)
     main.pack()
-
+    bottomFrame = Frame(root)
+    bottomFrame.pack(side=BOTTOM)
+    
 #συναρτηση σε περιπτωση επιλογης κρυπτογραφησης 
 def encClick():
 
@@ -54,14 +57,11 @@ def decClick():
     #διαγραφη προηγουμενων κουμπιων
     clear()
     
-    #----label για επιλογη αποκρυπτογραφησης----
-
-    
     labelDec = Label(main, text="File Decryption")
     labelDec.pack(side="top", pady=10)
-    #cansel button
-    cancel = Button(main, text="Cancel", padx=10, command=StartMenu)
-    cancel.pack(side="right", anchor="ne", padx=30, pady=10)
+    #cancel button
+    cancel = Button(bottomFrame, text="Cancel", padx=10, command=StartMenu)
+    cancel.pack(side="right", padx=30, pady=10)
 
     global keyFile 
     keyFile = None
@@ -75,8 +75,8 @@ def decClick():
 #συναρτηση για την δημιουργια η εκχωρηση κλειδιου
 def KeyManager(value):
     
-    cancel = Button(main, text="Cancel", padx=10, command=StartMenu)
-    cancel.pack(side="right", anchor="ne", padx=30 , pady=10)
+    cancel = Button(bottomFrame, text="Cancel", padx=10, command=StartMenu)
+    cancel.pack(side="right", padx=30 , pady=10)
 
     if(value == 1): # περιπτωση τυχαιας δημιουργιας
         # δημιουργεια κλειδιου
@@ -143,7 +143,7 @@ def Encryption(filename , key, extension):
         encrypted_file.write(encrypted)
     
     #ταμπελα για επιτυχης κρυπτογραφηση 
-    LabelEncryptionSuccess = Label(main, text="File \"encrypted_file\" now exists in your current working directory")
+    LabelEncryptionSuccess = Label(main, text="File \"encrypted_file"+extension+"\" now exists in your current working directory")
     LabelEncryptionSuccess.pack(side="top", pady=10)
     
     #κουμπι για επιστροφη σε αρχικο μενου
@@ -162,7 +162,7 @@ def Decryption(encrypted, key, extension):
         decrypted_file.write(decrypted)
 
     #----label για επιτυχης αποκρυπτογραφηση αρχειου----
-    labelFOrSuccedDecryption = Label(main, text="The file is decrypted: \n")
+    labelFOrSuccedDecryption = Label(main, text="The file \"decrypted_file"+extension+"\" now exists in your current working directory")
     labelFOrSuccedDecryption.pack(side="top", pady=10)
 
     #κουμπι για επιστροφη σε αρχικο μενου
@@ -239,7 +239,7 @@ def browseFiles2(key, extension):
         encrypted = encrypted_file.read()
     
     #----label για επιτυχης ανοιγμα κρυπτογραφημενου αρχειου
-    labelSuccesOpenEncrypteedFile = Label(main, text="successful opening of encrypted file: \n " +encFile)
+    labelSuccesOpenEncrypteedFile = Label(main, text="Opened file: \n " +encFile)
     labelSuccesOpenEncrypteedFile.pack(side="top", pady=10)
     #κουμπι για εκτελεση αποκρυπτογραφηση
     SubmitKeyChoice = Button(main, text="Decrypt your text", padx=50, pady=10, command=lambda: Decryption(encrypted, key, extension))  
@@ -284,12 +284,16 @@ def browseKeyForEnc():
 
 
 root = Tk()
-root.geometry("500x500")
+root.geometry("750x700")
 root.title("Cryptography Tool")
+
+#κυριο frame
 main=Frame(root)    
 main.pack()
 
-
+#bottom frame (για το κουμπι cancel)
+bottomFrame = Frame(root)
+bottomFrame.pack(side=BOTTOM)
 
 StartMenu()
 
