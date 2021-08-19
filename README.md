@@ -14,11 +14,11 @@ Run the following command in yout terminal to install the required package
 pip install cryptography
 ```
 
-### Run the app
+### Run the app  
 To run CryptoApp, simply run the cryptoApp.py script using the terminal 
 ``` bash
-python3 cryptoApp.py  
-```
+python3 cryptoApp.py
+``` 
 or using any other method of your choice.
 
 For a user-friendly experience, a GUI was bulit using the tkinter package.
