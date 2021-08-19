@@ -22,3 +22,6 @@ python3 cryptoApp.py
 or using any other method of your choice.
 
 For a user-friendly experience, a GUI was bulit using the tkinter package.
+
+
+
